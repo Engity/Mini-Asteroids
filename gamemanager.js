@@ -17,15 +17,66 @@ class GameManager {
         this.mainCharacter =  new Starship(game, params.CANVAS_SIZE / 2, params.CANVAS_SIZE / 2);
         this.entities = [this.mainCharacter];
         this.score = 0;
-        
+
+        this.totalAsteroids = 0;
+
+        this.difficulty = 1;
+        this.difficultyThreshold = 10;
+        this.asteroids = [];
+         
     };
 
     addEntity(entity) {
         this.entities.push(entity);
     };
 
+    spawningAsteroid(){
+        let spawningCoordinate = [
+            {x: 0, y: 0},
+            {x: 0, y: params.CANVAS_SIZE},
+            {x:  params.CANVAS_SIZE, y: params.CANVAS_SIZE},
+            {x:  params.CANVAS_SIZE, y: 0},
+        ];
+
+        if (this.totalAsteroids < this.difficultyThreshold){
+            let sPoint = randomInt(4);
+            let asteroid = new Asteroid(this.game, spawningCoordinate[sPoint].x, spawningCoordinate[sPoint].y, randomInt(10) + 3);
+            this.addEntity(asteroid);
+            this.totalAsteroids++;
+        }
+       
+
+    }
+
+    cleanUpAsteroid(){
+        this.entities.forEach(asteroid => {
+            if (asteroid instanceof Asteroid){
+                if (asteroid.x - asteroid.radius * 3 >= params.CANVAS_SIZE || asteroid.x + asteroid.radius * 3 <= 0 ||
+                    asteroid.y - asteroid.radius * 3 >= params.CANVAS_SIZE || asteroid.y + asteroid.radius * 3 <= 0
+                    ){
+                    
+                    asteroid.removeFromWorld = true;
+                    this.totalAsteroids--;
+                }
+            }
+        });
+    }
+
+    increaseDifficulty(){
+        this.difficulty ++;
+        this.difficultyThreshold += 2;
+    }
 
     update() {
+        this.spawningAsteroid();
+
+        this.cleanUpAsteroid();
+
+        if ((parseInt(this.score) >= 5 * this.difficulty)){
+            //console.log("Seem ez, let's pump the difficulty up a bit!", parseInt(this.score));
+            this.increaseDifficulty();
+        }
+
         if (!this.mainCharacter.isDying && !this.gameOver)
             this.score += 0.005;
 
@@ -36,6 +87,12 @@ class GameManager {
 
             if (!entity.removeFromWorld) {
                 entity.update();
+            }
+        }
+
+        for (let i = this.entities.length - 1; i >= 0; --i) {
+            if (this.entities[i].removeFromWorld) {
+                this.entities.splice(i, 1);
             }
         }
     };

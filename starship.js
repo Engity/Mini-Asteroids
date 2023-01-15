@@ -1,3 +1,8 @@
+/**
+ * @author Toan Nguyen
+ * The main player
+ * Display based on geometry
+ */
 class Starship {
     constructor(game, x, y) {
         Object.assign(this, { game, x, y });
@@ -22,8 +27,8 @@ class Starship {
         this.maximumSpeed = 300;
 
         this.currentAcceleration = 0;
-        this.acceleration = 1;
-        this.maximumAcceleration = 7;
+        this.acceleration = 0.01;
+        this.maximumAcceleration = 1;
 
         this.activateThruster = false;
 
@@ -84,7 +89,7 @@ class Starship {
             //console.log("Going " + ((this.game.left)? "left ": "right ") + this.center.x + this.center.y + " " + this.head.x + " " + this.head.y + " " + this.game.clockTick);
             //console.log(this.angle);
 
-            this.angle += 0.01 * ((this.game.left) ? -1 : 1);
+            this.angle += 0.015 * ((this.game.left) ? -1 : 1);
             this.angle %= Math.PI * 2;
 
             if (this.angle <= 0) {
@@ -109,6 +114,11 @@ class Starship {
 
                 this.currentAcceleration = Math.sqrt(this.forceX ** 2 + this.forceY ** 2);
             }
+        }
+        else{
+            this.currentAcceleration = 0;
+            this.forceX = 0;
+            this.forceY = 0;
         }
 
         let newDx = this.dx + this.forceX;
@@ -156,7 +166,7 @@ class Starship {
 
     drawLine(ctx, xStart, yStart, xEnd, yEnd) {
         ctx.fillStyle = "Black";
-        ctx.strokeStyle = "Black";
+        ctx.strokeStyle = "red";
 
         ctx.beginPath();
         ctx.moveTo(xStart, yStart);
