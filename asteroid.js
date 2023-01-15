@@ -118,10 +118,14 @@ class Asteroid {
     };
 
     checkCollisionWithLineSegment(line) {
+        if (Asteroid.distance({ x: this.x, y: this.y }, {x :line.points[0].x, y :line.points[0].y}) > this.radius + line.length) {
+            return false;
+        }
+
         let res = false;
         this.edges.forEach(edge => {
             let collision = edge.collide(line);
-            if (line.onSegment(collision.x)) {
+            if (edge.onSegmentX(collision.x) && edge.onSegmentY(collision.y)){
                 res = true;
                 return true;
             }
@@ -174,13 +178,11 @@ class Asteroid {
                 --this.dyingTickAnimation;
             }
         }
-
-        this.updatePos();
     }
 
     dying() {
         this.isDying = true;
-        this.dyingTickAnimation = 400;
+        this.dyingTickAnimation = 200;
     }
 
     drawLine(ctx, xStart, yStart, xEnd, yEnd) {
@@ -203,7 +205,7 @@ class Asteroid {
         ctx.fillStyle = "white";
         ctx.strokeStyle = "black";
         //ctx.arc(this.center.x, this.center.y, this.radius, 0, 2 * Math.PI);
-        if (this.dyingTickAnimation > 200) {
+        if (this.dyingTickAnimation > 100) {
             ctx.arc(this.center.x, this.center.y, this.dyingTickAnimation / 400 * this.radius, 0, 2 * Math.PI);
         }
         else

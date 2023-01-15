@@ -4,13 +4,15 @@ class Line {
         this.intRadius = 3;
 
         this.points = [];
-        
+        this.length = 0;
     };
 
     addEndPoints(x1, y1, x2, y2){
         this.points.push({x: x1, y: y1},
             {x: x2, y: y2},
         );
+
+        this.length = Math.sqrt((this.points[0].x - this.points[1].x) ** 2 + (this.points[0].y - this.points[1].y) ** 2);
     }
 
     slope() {
@@ -36,8 +38,12 @@ class Line {
         return (-1 * this.yInt())/ this.slope();
     };
 
-    onSegment(x) {
+    onSegmentX(x) {
         return (this.points[0].x <= x && x <= this.points[1].x);
+    };
+
+    onSegmentY(y) {
+        return (this.points[0].y <= y && y <= this.points[1].y);
     };
 
     collide(other) {

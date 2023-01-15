@@ -184,7 +184,8 @@ class Starship {
         if (this.rightTail.x == this.leftTail.x) {
             mTail = 99;
         }
-        let thrusterLength = this.radius / 2;
+        let thrusterLength = this.radius / 3;
+
         let tailYInt = this.leftTail.y - mTail * this.leftTail.x;
         // let mReTail = 1/mTail;
         let revAngle = this.angle - Math.PI;
@@ -203,6 +204,18 @@ class Starship {
             let newJ = Math.sin(revAngle).toFixed(3) * (thrusterLength) + j;
 
             this.drawLine(ctx, i, j, newI, newJ);
+
+            // //Adding new way to destroy asteroid
+            // let tmp = new Line (this.game);
+            // tmp.addEndPoints( i, j, newI, newJ);
+
+            // this.game.gameManager.entities.forEach(asteroid => {
+            //     if (asteroid instanceof Asteroid && !asteroid.removeFromWorld){
+            //         if (asteroid.checkCollisionWithLineSegment(tmp)){
+            //             asteroid.dying();
+            //         }
+            //     }
+            // });
 
         }
     }
