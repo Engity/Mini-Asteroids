@@ -31,8 +31,6 @@ class Asteroid {
         }
         this.anglePool.sort((a, b) => a - b);
 
-
-
         for (let i = 0; i < vertexesNum; i++) {
             let x = Math.cos(this.anglePool[i]).toFixed(3) * this.radius + this.x;
             let y = Math.sin(this.anglePool[i]).toFixed(3) * this.radius + this.y;
@@ -56,20 +54,6 @@ class Asteroid {
     updatePos() {
         this.x += this.dx * this.game.clockTick;
         this.y += this.dy * this.game.clockTick;
-
-        // if (this.x + this.radius >= params.CANVAS_SIZE) {
-        //     this.x = 0;
-        // }
-        // if (this.x < 0) {
-        //     this.x = params.CANVAS_SIZE - this.radius;
-        // }
-
-        // if (this.y + this.radius >= params.CANVAS_SIZE) {
-        //     this.y = 0;
-        // }
-        // if (this.y < 0) {
-        //     this.y = params.CANVAS_SIZE - this.radius;
-        // }
 
         this.center = { x: this.x, y: this.y }
         this.angle += this.spinning;
@@ -97,8 +81,8 @@ class Asteroid {
             if (i == this.vertexesNum - 1) {
                 j = 0;
                 let tmp = new Line(this.game);
-                tmp.addEndPoints(this.vertexes[i].x, this.vertexes[i].y,
-                    this.vertexes[j].x, this.vertexes[j].y)
+                tmp.addEndPoints(this.vertexes[j].x, this.vertexes[j].y,
+                    this.vertexes[i].x, this.vertexes[i].y)
                 this.edges.push(tmp);
             }
 
@@ -118,14 +102,17 @@ class Asteroid {
     };
 
     checkCollisionWithLineSegment(line) {
-        if (Asteroid.distance({ x: this.x, y: this.y }, {x :line.points[0].x, y :line.points[0].y}) > this.radius + line.length) {
+        if (Asteroid.distance({ x: this.x, y: this.y }, {x :line.points[0].x, y :line.points[0].y}) > this.radius + line.length &&
+            Asteroid.distance({ x: this.x, y: this.y }, {x :line.points[1].x, y :line.points[1].y}) > this.radius + line.length) {
             return false;
         }
 
         let res = false;
         this.edges.forEach(edge => {
             let collision = edge.collide(line);
-            if (edge.onSegmentX(collision.x) && edge.onSegmentY(collision.y)){
+            //
+            if (line.onSegmentX(collision.x) && line.onSegmentY(collision.y)){
+                
                 res = true;
                 return true;
             }
@@ -167,7 +154,7 @@ class Asteroid {
     update() {
         if (!this.isDying) {
             this.updatePos();
-            this.checkCollisionPlayer();
+            
         }
         else {
             if (this.dyingTickAnimation <= 0) {
@@ -182,7 +169,7 @@ class Asteroid {
 
     dying() {
         this.isDying = true;
-        this.dyingTickAnimation = 200;
+        this.dyingTickAnimation = 100;
     }
 
     drawLine(ctx, xStart, yStart, xEnd, yEnd) {
@@ -205,8 +192,8 @@ class Asteroid {
         ctx.fillStyle = "white";
         ctx.strokeStyle = "black";
         //ctx.arc(this.center.x, this.center.y, this.radius, 0, 2 * Math.PI);
-        if (this.dyingTickAnimation > 100) {
-            ctx.arc(this.center.x, this.center.y, this.dyingTickAnimation / 400 * this.radius, 0, 2 * Math.PI);
+        if (this.dyingTickAnimation > 50) {
+            ctx.arc(this.center.x, this.center.y, this.dyingTickAnimation / 100 * this.radius, 0, 2 * Math.PI);
         }
         else
             ctx.arc(this.center.x, this.center.y, this.radius / this.dyingTickAnimation, 0, 2 * Math.PI);

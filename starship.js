@@ -4,10 +4,12 @@
  * Display based on geometry
  */
 class Starship {
+    static RELOAD_SPEED = 75;
+
     constructor(game, x, y) {
         Object.assign(this, { game, x, y });
         this.center = { x: x, y: y };
-    
+
         this.radius = 30;
         this.head = { x: x, y: y - this.radius };
         this.leftTail = { x: x - this.radius, y: y };
@@ -34,6 +36,9 @@ class Starship {
 
         this.isDying = false;
         this.dyingTickAnimation = 0;
+        this.thrusters = [];
+
+        this.reload = 0;
 
     }
 
@@ -71,6 +76,50 @@ class Starship {
         this.rightTail.x = Math.cos(rightAngle).toFixed(3) * this.radius + this.x;
         this.rightTail.y = Math.sin(rightAngle).toFixed(3) * this.radius + this.y;
 
+        let mTail = (this.rightTail.y - this.leftTail.y) / (this.rightTail.x - this.leftTail.x);
+        if (this.rightTail.x == this.leftTail.x) {
+            mTail = 99;
+        }
+        let thrusterLength = this.radius / 3;
+
+        let tailYInt = this.leftTail.y - mTail * this.leftTail.x;
+        // let mReTail = 1/mTail;
+        let revAngle = this.angle - Math.PI;
+        let beginX = Math.min(this.leftTail.x, this.rightTail.x);
+        let endX = Math.max(this.leftTail.x, this.rightTail.x);
+
+        let step = (endX - beginX) / 10;
+        if (step == 0) {
+            step = 0.1;
+        }
+
+        this.thrusters = [];
+
+        for (let i = beginX; i <= endX; i += step) {
+            let j = (this.rightTail.x == this.leftTail.x) ? this.rightTail.y : (mTail * i) + tailYInt;
+
+            let newI = Math.cos(revAngle).toFixed(3) * (thrusterLength) + i;
+            let newJ = Math.sin(revAngle).toFixed(3) * (thrusterLength) + j;
+
+
+
+
+            let tmp = new Line(this.game);
+            tmp.addEndPoints(i, j, newI, newJ);
+            this.thrusters.push(tmp);
+            
+            // //Adding new way to destroy asteroid
+            // if (this.game.up) {
+            //     this.game.gameManager.entities.forEach(asteroid => {
+            //         if (asteroid instanceof Asteroid && !asteroid.removeFromWorld) {
+            //             if (asteroid.checkCollisionWithLineSegment(tmp)) {
+            //                 asteroid.dying();
+            //             }
+            //         }
+            //     });
+            // }
+
+        }
 
     }
 
@@ -115,7 +164,7 @@ class Starship {
                 this.currentAcceleration = Math.sqrt(this.forceX ** 2 + this.forceY ** 2);
             }
         }
-        else{
+        else {
             this.currentAcceleration = 0;
             this.forceX = 0;
             this.forceY = 0;
@@ -135,6 +184,19 @@ class Starship {
         }
     }
 
+    shoot() {
+        if (this.reload <= 0 && this.game.shooting) {
+            this.reload = Starship.RELOAD_SPEED;
+            let bullet = new Bullet(this.game, this.head.x, this.head.y, this.angle);
+
+            this.game.gameManager.addEntity(bullet);
+
+        }
+
+        this.reload--;
+        this.reload = Math.max(this.reload, 0);
+    }
+
     update() {
         if (!this.isDying) {
             //Start to applying force
@@ -146,6 +208,13 @@ class Starship {
                 this.activateThruster = false;
             }
             this.updatePos();
+
+            //Shooting
+            this.shoot();
+
+
+
+
         }
         else {
             if (this.dyingTickAnimation <= 0) {
@@ -159,14 +228,14 @@ class Starship {
         }
     }
 
-    dying(){
-        if(this.isDying) 
+    dying() {
+        if (this.isDying)
             return;
         this.isDying = true;
         this.dyingTickAnimation = 400;
     }
 
-    
+
     drawLine(ctx, xStart, yStart, xEnd, yEnd) {
         ctx.fillStyle = "Black";
         ctx.strokeStyle = "red";
@@ -180,54 +249,23 @@ class Starship {
     }
 
     drawThruster(ctx) {
-        let mTail = (this.rightTail.y - this.leftTail.y) / (this.rightTail.x - this.leftTail.x);
-        if (this.rightTail.x == this.leftTail.x) {
-            mTail = 99;
-        }
-        let thrusterLength = this.radius / 3;
-
-        let tailYInt = this.leftTail.y - mTail * this.leftTail.x;
-        // let mReTail = 1/mTail;
-        let revAngle = this.angle - Math.PI;
-        let beginX = Math.min(this.leftTail.x, this.rightTail.x);
-        let endX = Math.max(this.leftTail.x, this.rightTail.x);
-
-        let step = (endX - beginX) / 10;
-        if (step == 0) {
-            step = 0.1;
-        }
-
-        for (let i = beginX; i <= endX; i += step) {
-            let j = (this.rightTail.x == this.leftTail.x) ? this.rightTail.y : (mTail * i) + tailYInt;
-
-            let newI = Math.cos(revAngle).toFixed(3) * (thrusterLength) + i;
-            let newJ = Math.sin(revAngle).toFixed(3) * (thrusterLength) + j;
-
-            this.drawLine(ctx, i, j, newI, newJ);
-
-            // //Adding new way to destroy asteroid
-            // let tmp = new Line (this.game);
-            // tmp.addEndPoints( i, j, newI, newJ);
-
-            // this.game.gameManager.entities.forEach(asteroid => {
-            //     if (asteroid instanceof Asteroid && !asteroid.removeFromWorld){
-            //         if (asteroid.checkCollisionWithLineSegment(tmp)){
-            //             asteroid.dying();
-            //         }
-            //     }
-            // });
-
-        }
+        this.thrusters.forEach(thruster => {
+            let i = thruster.points[0].x;
+            let j = thruster.points[0].y;
+            let i2 = thruster.points[1].x;
+            let j2 = thruster.points[1].y;
+            this.drawLine(ctx, i, j, i2, j2);
+        });
     }
 
     drawDyingAnimation(ctx) {
         //console.log("Radius",  this.dyingTickAnimation + 200);
         ctx.beginPath();
-        
+
         ctx.fillStyle = "white";
         ctx.strokeStyle = "red";
         //ctx.arc(this.center.x, this.center.y, this.radius, 0, 2 * Math.PI);
-        if (this.dyingTickAnimation >= 75){
+        if (this.dyingTickAnimation >= 75) {
             ctx.arc(this.center.x, this.center.y, this.dyingTickAnimation / 400 * this.radius, 0, 2 * Math.PI);
         }
         else
@@ -240,7 +278,7 @@ class Starship {
     draw(ctx) {
         //Draw the line
         ctx.beginPath();
-       
+
         if (!this.isDying) {
             this.drawLine(ctx, this.rightTail.x, this.rightTail.y, this.leftTail.x, this.leftTail.y);
             this.drawLine(ctx, this.head.x, this.head.y, this.leftTail.x, this.leftTail.y);
@@ -254,6 +292,6 @@ class Starship {
             this.drawDyingAnimation(ctx);
         }
 
-        
+
     }
 }

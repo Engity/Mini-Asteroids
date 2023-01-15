@@ -19,6 +19,7 @@ class GameEngine {
         this.right = false;
         this.up = false;
         this.down = false;
+        this.shooting = false;
 
         this.gameManager = null;
 
@@ -83,12 +84,14 @@ class GameEngine {
                     break;
                 case "ArrowUp":
                 case "KeyW":
-                case "Space":
                     that.up = true;
                     break;
                 case "ArrowDown":
                 case "KeyS":
                     that.down = true;
+                    break;
+                case "Space":
+                    that.shooting = true;
                     break;
             }
         }
@@ -105,12 +108,14 @@ class GameEngine {
                     break;
                 case "ArrowUp":
                 case "KeyW":
-                case "Space":
                     that.up = false;
                     break;
                 case "ArrowDown":
                 case "KeyS":
                     that.down = false;
+                    break;
+                case "Space":
+                    that.shooting = false;
                     break;
             }
         }
@@ -150,8 +155,8 @@ class GameEngine {
     };
 
     update() {
-        if (this.gameManager.gameOver && this.down){
-            console.log("Start again");
+        if (this.gameManager.gameOver && this.down) {
+           
             this.gameManager.removeFromWorld = true;
             this.gameManager = new GameManager(this, this.ctx);
             this.addEntity(this.gameManager);

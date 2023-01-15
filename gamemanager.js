@@ -48,9 +48,25 @@ class GameManager {
 
     }
 
+    cleanUpBullet(){
+        this.entities.forEach(bullet => {
+            if (bullet instanceof Bullet && !bullet.isDying){
+                if (bullet.x1 - Bullet.BULLET_LENGTH * 3 >= params.CANVAS_SIZE || bullet.x1 + Bullet.BULLET_LENGTH * 3 <= 0 ||
+                    bullet.y1 - Bullet.BULLET_LENGTH * 3 >= params.CANVAS_SIZE || bullet.y1 + Bullet.BULLET_LENGTH * 3 <= 0 ||
+                    bullet.x2 - Bullet.BULLET_LENGTH * 3 >= params.CANVAS_SIZE || bullet.x2 + Bullet.BULLET_LENGTH * 3 <= 0 ||
+                    bullet.y2 - Bullet.BULLET_LENGTH * 3 >= params.CANVAS_SIZE || bullet.y2 + Bullet.BULLET_LENGTH * 3 <= 0
+                    ){
+                    
+                    bullet.removeFromWorld = true;
+                }
+               
+            }
+        });
+    }
+
     cleanUpAsteroid(){
         this.entities.forEach(asteroid => {
-            if (asteroid instanceof Asteroid){
+            if (asteroid instanceof Asteroid && !asteroid.isDying){
                 if (asteroid.x - asteroid.radius * 3 >= params.CANVAS_SIZE || asteroid.x + asteroid.radius * 3 <= 0 ||
                     asteroid.y - asteroid.radius * 3 >= params.CANVAS_SIZE || asteroid.y + asteroid.radius * 3 <= 0
                     ){
@@ -58,7 +74,9 @@ class GameManager {
                     asteroid.removeFromWorld = true;
                     this.totalAsteroids--;
                 }
+                asteroid.checkCollisionPlayer();
             }
+            
         });
     }
 
@@ -70,7 +88,7 @@ class GameManager {
     update() {
         this.spawningAsteroid();
 
-        this.cleanUpAsteroid();
+      
 
         if ((parseInt(this.score) >= 5 * this.difficulty)){
             //console.log("Seem ez, let's pump the difficulty up a bit!", parseInt(this.score));
@@ -89,6 +107,9 @@ class GameManager {
                 entity.update();
             }
         }
+
+        this.cleanUpAsteroid();
+        this.cleanUpBullet();
 
         for (let i = this.entities.length - 1; i >= 0; --i) {
             if (this.entities[i].removeFromWorld) {

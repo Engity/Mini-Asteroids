@@ -22,13 +22,15 @@ class Line {
             slope = (this.points[1].y - this.points[0].y) / (this.points[1].x - this.points[0].x);
         else
             slope = false;
-
+    
         return slope;
     };
 
     yInt() {
         if (this.points[0].x === this.points[1].x) return this.points[0].x === 0 ? 0 : false;
         if (this.points[0].y === this.points[1].y) return this.points[0].y;
+
+        
         return this.points[0].y - this.slope() * this.points[0].x;
     };
 
@@ -39,15 +41,18 @@ class Line {
     };
 
     onSegmentX(x) {
-        return (this.points[0].x <= x && x <= this.points[1].x);
+        return (this.points[0].x <= x && x <= this.points[1].x) ||
+            (this.points[0].x >= x && x >= this.points[1].x);
     };
 
     onSegmentY(y) {
-        return (this.points[0].y <= y && y <= this.points[1].y);
+        return (this.points[0].y <= y && y <= this.points[1].y)||
+        (this.points[0].y >= y && y >= this.points[1].y);
     };
 
     collide(other) {
         if (this.slope() === other.slope()) return false;
+        //if(!other.slope()) return {x: other.points[1].x, y: this.slope() * other.points[1].x + this.yInt()};
 
         var intersect = {};
         intersect.x = (other.yInt() - this.yInt()) / (this.slope() - other.slope());
