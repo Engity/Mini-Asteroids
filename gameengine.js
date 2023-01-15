@@ -75,7 +75,6 @@ class GameEngine {
 
             switch (e.code) {
                 case "ArrowLeft":
-                case "KeyA":
                     that.left = true;
                     break;
                 case "ArrowRight":
@@ -92,6 +91,43 @@ class GameEngine {
                     break;
                 case "Space":
                     that.shooting = true;
+                    break;
+                case "KeyT":
+                    if (GameManager.CHEAT == "" || GameManager.CHEAT == "T") {
+                        GameManager.CHEAT = "T";
+                    }
+                    else {
+                        if (GameManager.CHEAT !== "TOAN")
+                            GameManager.CHEAT = "";
+                    }
+                    break;
+                case "KeyO":
+                    if (GameManager.CHEAT == "T" || GameManager.CHEAT == "TO") {
+                        GameManager.CHEAT = "TO";
+                    }
+                    else {
+                        if (GameManager.CHEAT !== "TOAN")
+                            GameManager.CHEAT = "";
+                    }
+                    break;
+                case "KeyA":
+                    that.left = true;
+                    if (GameManager.CHEAT == "TO" || GameManager.CHEAT == "TOA") {
+                        GameManager.CHEAT = "TOA";
+                    }
+                    else {
+                        if (GameManager.CHEAT !== "TOAN")
+                            GameManager.CHEAT = "";
+                    }
+                    break;
+                case "KeyN":
+                    if (GameManager.CHEAT == "TOA" || GameManager.CHEAT == "TOAN") {
+                        GameManager.CHEAT = "TOAN";
+                    }
+                    else {
+                        if (GameManager.CHEAT !== "TOAN")
+                            GameManager.CHEAT = "";
+                    }
                     break;
             }
         }
@@ -156,7 +192,7 @@ class GameEngine {
 
     update() {
         if (this.gameManager.gameOver && this.down) {
-           
+
             this.gameManager.removeFromWorld = true;
             this.gameManager = new GameManager(this, this.ctx);
             this.addEntity(this.gameManager);

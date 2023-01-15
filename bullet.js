@@ -48,6 +48,7 @@ class Bullet {
 
         this.game.gameManager.entities.forEach(asteroid => {
             if (asteroid instanceof Asteroid){
+                
                 if (!asteroid.isDying && asteroid.checkCollisionWithLineSegment(tmp)){
                     asteroid.dying();
                     this.game.gameManager.totalAsteroids--;

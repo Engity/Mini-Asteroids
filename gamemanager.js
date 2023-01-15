@@ -9,6 +9,8 @@ class GameManager {
      * 
      * @param {*} game the game engine
      */
+    static CHEAT = "";
+
     constructor(game, ctx) {
         Object.assign(this, { game, ctx});
         
@@ -74,7 +76,9 @@ class GameManager {
                     asteroid.removeFromWorld = true;
                     this.totalAsteroids--;
                 }
-                asteroid.checkCollisionPlayer();
+                
+                if (GameManager.CHEAT != "TOAN")
+                    asteroid.checkCollisionPlayer();
             }
             
         });

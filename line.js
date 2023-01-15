@@ -18,7 +18,7 @@ class Line {
     slope() {
         var slope;
 
-        if (this.points[1].x !== this.points[0].x)
+        if (this.points[1].x - this.points[0].x > 0.01)
             slope = (this.points[1].y - this.points[0].y) / (this.points[1].x - this.points[0].x);
         else
             slope = false;
@@ -52,12 +52,12 @@ class Line {
 
     collide(other) {
         if (this.slope() === other.slope()) return false;
-        //if(!other.slope()) return {x: other.points[1].x, y: this.slope() * other.points[1].x + this.yInt()};
+        if(!other.slope()) return {x: other.points[1].x, y: this.slope() * other.points[1].x + this.yInt()};
 
         var intersect = {};
         intersect.x = (other.yInt() - this.yInt()) / (this.slope() - other.slope());
         intersect.y = this.slope() * intersect.x + this.yInt();
-
+       
         return intersect;
     };
 }

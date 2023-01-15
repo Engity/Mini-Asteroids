@@ -106,12 +106,12 @@ class Asteroid {
             Asteroid.distance({ x: this.x, y: this.y }, {x :line.points[1].x, y :line.points[1].y}) > this.radius + line.length) {
             return false;
         }
-
+        
         let res = false;
         this.edges.forEach(edge => {
             let collision = edge.collide(line);
-            //
-            if (line.onSegmentX(collision.x) && line.onSegmentY(collision.y)){
+
+            if (collision && line.onSegmentX(collision.x) && line.onSegmentY(collision.y)){
                 
                 res = true;
                 return true;

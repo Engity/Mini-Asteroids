@@ -237,9 +237,6 @@ class Starship {
 
 
     drawLine(ctx, xStart, yStart, xEnd, yEnd) {
-        ctx.fillStyle = "Black";
-        ctx.strokeStyle = "red";
-
         ctx.beginPath();
         ctx.moveTo(xStart, yStart);
         ctx.lineTo(xEnd, yEnd);
@@ -280,6 +277,12 @@ class Starship {
         ctx.beginPath();
 
         if (!this.isDying) {
+            ctx.fillStyle = "white";
+            ctx.strokeStyle = "red";
+            if (this.shooting && this.reload > 0){
+                ctx.fillStyle = "red";
+                ctx.strokeStyle = "blue";
+            }
             this.drawLine(ctx, this.rightTail.x, this.rightTail.y, this.leftTail.x, this.leftTail.y);
             this.drawLine(ctx, this.head.x, this.head.y, this.leftTail.x, this.leftTail.y);
             this.drawLine(ctx, this.head.x, this.head.y, this.rightTail.x, this.rightTail.y);
