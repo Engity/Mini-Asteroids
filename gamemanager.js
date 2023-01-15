@@ -21,7 +21,7 @@ class GameManager {
         this.totalAsteroids = 0;
 
         this.difficulty = 1;
-        this.difficultyThreshold = 10;
+        this.difficultyThreshold = 15;
         this.asteroids = [];
          
     };
@@ -32,15 +32,15 @@ class GameManager {
 
     spawningAsteroid(){
         let spawningCoordinate = [
-            {x: 0, y: 0},
-            {x: 0, y: params.CANVAS_SIZE},
-            {x:  params.CANVAS_SIZE, y: params.CANVAS_SIZE},
-            {x:  params.CANVAS_SIZE, y: 0},
+            {x: randomInt(params.CANVAS_SIZE), y: 0},
+            {x: 0, y: randomInt(params.CANVAS_SIZE)},
+            {x:  params.CANVAS_SIZE, y: randomInt(params.CANVAS_SIZE)},
+            {x:  randomInt(params.CANVAS_SIZE), y: 0},
         ];
 
         if (this.totalAsteroids < this.difficultyThreshold){
             let sPoint = randomInt(4);
-            let asteroid = new Asteroid(this.game, spawningCoordinate[sPoint].x, spawningCoordinate[sPoint].y, randomInt(10) + 3);
+            let asteroid = new Asteroid(this.game, spawningCoordinate[sPoint].x, spawningCoordinate[sPoint].y, randomInt(10) + 5);
             this.addEntity(asteroid);
             this.totalAsteroids++;
         }
@@ -98,12 +98,16 @@ class GameManager {
     };
 
     drawGameOver(ctx) {
+        ctx.fillStyle = "black";
+        ctx.strokeStyle = "black";
         ctx.font = "58px serif";
         ctx.strokeText("Game Over, Press S to play again!", params.CANVAS_SIZE / 2 - 450, params.CANVAS_SIZE / 2);
     }
 
     draw(ctx){
          //Displaying the score
+         ctx.fillStyle = "black";
+         ctx.strokeStyle = "black";
          ctx.font = "28px serif";
          ctx.fillText("Score: " + this.score.toFixed(0), 10, 35);
 

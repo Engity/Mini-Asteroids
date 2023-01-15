@@ -1,10 +1,10 @@
-﻿
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="utf-8">
     <title>Mini Asteroids</title>
-  
+
     <script type="text/javascript" src="./assetmanager.js"></script>
     <script type="text/javascript" src="./timer.js"></script>
     <script type="text/javascript" src="./gameengine.js"></script>
@@ -13,11 +13,25 @@
     <script type="text/javascript" src="./animator.js"></script>
     <script type="text/javascript" src="./gamemanager.js"></script>
     <script type="text/javascript" src="./starship.js"></script>
-    <script type="text/javascript" src="./wall.js"></script>
+    <script type="text/javascript" src="./line.js"></script>
     <script type="text/javascript" src="./asteroid.js"></script>
     <script type="text/javascript" src="./main.js"></script>
 </head>
+
 <body>
-    <canvas id="gameWorld" width="1200" height="1200" style="background: white; border: 1px solid black" tabindex="0" autofocus></canvas>
+    
+    <div >   
+        <canvas id="gameWorld" width="1200" height="1200" style="background: white; border: 1px solid black; overflow:auto;"
+            tabindex="0" autofocus>
+            
+        </canvas>
+        <p style="text-align:left; text-shadow: 1px 1px; font-size: 20px;" style="width: 100%;overflow:auto;"> <strong> Use W to use thruster; AD to
+            rotate. </strong> </p>
+        
+    </div>
+    
+
+
 </body>
+
 </html>

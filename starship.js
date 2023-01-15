@@ -24,10 +24,10 @@ class Starship {
 
         //Speed constraints
         this.currentSpeed = 0;
-        this.maximumSpeed = 300;
+        this.maximumSpeed = 250;
 
         this.currentAcceleration = 0;
-        this.acceleration = 0.01;
+        this.acceleration = 0.02;
         this.maximumAcceleration = 1;
 
         this.activateThruster = false;
@@ -160,10 +160,13 @@ class Starship {
     }
 
     dying(){
+        if(this.isDying) 
+            return;
         this.isDying = true;
         this.dyingTickAnimation = 400;
     }
 
+    
     drawLine(ctx, xStart, yStart, xEnd, yEnd) {
         ctx.fillStyle = "Black";
         ctx.strokeStyle = "red";
@@ -174,7 +177,6 @@ class Starship {
 
         ctx.fill();
         ctx.stroke();
-
     }
 
     drawThruster(ctx) {
@@ -182,7 +184,7 @@ class Starship {
         if (this.rightTail.x == this.leftTail.x) {
             mTail = 99;
         }
-        let thrusterLength = this.radius / 5;
+        let thrusterLength = this.radius / 2;
         let tailYInt = this.leftTail.y - mTail * this.leftTail.x;
         // let mReTail = 1/mTail;
         let revAngle = this.angle - Math.PI;
@@ -210,9 +212,9 @@ class Starship {
         ctx.beginPath();
         
         ctx.fillStyle = "white";
-        ctx.strokeStyle = "black";
+        ctx.strokeStyle = "red";
         //ctx.arc(this.center.x, this.center.y, this.radius, 0, 2 * Math.PI);
-        if (this.dyingTickAnimation > 200){
+        if (this.dyingTickAnimation >= 75){
             ctx.arc(this.center.x, this.center.y, this.dyingTickAnimation / 400 * this.radius, 0, 2 * Math.PI);
         }
         else
@@ -230,14 +232,15 @@ class Starship {
             this.drawLine(ctx, this.rightTail.x, this.rightTail.y, this.leftTail.x, this.leftTail.y);
             this.drawLine(ctx, this.head.x, this.head.y, this.leftTail.x, this.leftTail.y);
             this.drawLine(ctx, this.head.x, this.head.y, this.rightTail.x, this.rightTail.y);
+            //Drawing thruster
+            if (this.activateThruster) {
+                this.drawThruster(ctx);
+            }
         }
         else {
             this.drawDyingAnimation(ctx);
         }
 
-        //Drawing thruster
-        if (this.activateThruster) {
-            this.drawThruster(ctx);
-        }
+        
     }
 }

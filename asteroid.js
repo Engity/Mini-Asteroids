@@ -3,8 +3,8 @@
  * vertexesNum is the number of vertexes of the asteroids. Should be <= 7 and >= 3
  */
 class Asteroid {
-    constructor(game, x, y, vertexesNum = 3) {
-        Object.assign(this, { game, x, y, vertexesNum});
+    constructor(game, x, y, vertexesNum = 5) {
+        Object.assign(this, { game, x, y, vertexesNum });
 
         //Randomize movement
         this.dx = randomInt(100) - 35;
@@ -12,7 +12,7 @@ class Asteroid {
 
         this.angle = 3 * Math.PI / 2;
         this.spinning = 2 * Math.PI / 3600 * randomInt(5); //Spinning slightly
-        
+
         this.radius = 30;
         this.center = { x: x, y: y };
 
@@ -25,21 +25,21 @@ class Asteroid {
         this.shuffleArray(randomPool);
 
         this.anglePool = [];
-        for (let i = 0 ; i < vertexesNum; i++){
+        for (let i = 0; i < vertexesNum; i++) {
             let radianAngle = randomPool[i] / 180 * Math.PI;
             this.anglePool.push(radianAngle);
         }
         this.anglePool.sort((a, b) => a - b);
 
-        
 
-        for (let i = 0 ; i < vertexesNum; i++){
+
+        for (let i = 0; i < vertexesNum; i++) {
             let x = Math.cos(this.anglePool[i]).toFixed(3) * this.radius + this.x;
             let y = Math.sin(this.anglePool[i]).toFixed(3) * this.radius + this.y;
-            this.vertexes.push({x: x, y: y});
+            this.vertexes.push({ x: x, y: y });
         }
-      
-        
+
+        this.edges = [];
     }
 
     /**
@@ -48,10 +48,10 @@ class Asteroid {
      * @returns the shuffled array
      */
     shuffleArray(array) {
- 
-        return array.sort( ()=>Math.random()-0.5 );
-      
-     }
+
+        return array.sort(() => Math.random() - 0.5);
+
+    }
 
     updatePos() {
         this.x += this.dx * this.game.clockTick;
@@ -75,13 +75,33 @@ class Asteroid {
         this.angle += this.spinning;
         this.angle %= 2 * Math.PI;
 
-        for (let i = 0 ; i < this.vertexesNum; i++){
+        this.edges = [];
+
+        for (let i = 0; i < this.vertexesNum; i++) {
             this.anglePool[i] += this.spinning;
             this.anglePool[i] %= 2 * Math.PI;
             let x = Math.cos(this.anglePool[i]).toFixed(3) * this.radius + this.x;
             let y = Math.sin(this.anglePool[i]).toFixed(3) * this.radius + this.y;
-            
-            this.vertexes[i] ={x: x, y: y};
+
+            this.vertexes[i] = { x: x, y: y };
+
+            //Update the edges
+            let j = i - 1;
+            if (j >= 0) {
+                let tmp = new Line(this.game);
+                tmp.addEndPoints(this.vertexes[i].x, this.vertexes[i].y,
+                    this.vertexes[j].x, this.vertexes[j].y)
+                this.edges.push(tmp);
+            }
+
+            if (i == this.vertexesNum - 1) {
+                j = 0;
+                let tmp = new Line(this.game);
+                tmp.addEndPoints(this.vertexes[i].x, this.vertexes[i].y,
+                    this.vertexes[j].x, this.vertexes[j].y)
+                this.edges.push(tmp);
+            }
+
         }
 
     }
@@ -91,12 +111,59 @@ class Asteroid {
         if (mag == 0)
             return;
         return [x / mag, y / mag];
+    }
 
+    static distance = (p1, p2) => {
+        return Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
+    };
+
+    checkCollisionWithLineSegment(line) {
+        let res = false;
+        this.edges.forEach(edge => {
+            let collision = edge.collide(line);
+            if (line.onSegment(collision.x)) {
+                res = true;
+                return true;
+            }
+        });
+        return res;
+    }
+
+    checkCollisionPlayer() {
+        let player = this.game.gameManager.mainCharacter;
+
+        //Prechecking before going line by line
+        if (player.isDying || Asteroid.distance({ x: this.x, y: this.y }, player.center) > this.radius + player.radius) {
+            return;
+        }
+
+        //Checking line by line
+        let playerLines = [];
+
+        let tmp = new Line(this.game);
+        tmp.addEndPoints(player.head.x, player.head.y, player.leftTail.x, player.leftTail.y)
+        playerLines.push(tmp);
+
+        tmp = new Line(this.game);
+        tmp.addEndPoints(player.leftTail.x, player.leftTail.y, player.rightTail.x, player.rightTail.y);
+        playerLines.push(tmp);
+
+        tmp = new Line(this.game);
+        tmp.addEndPoints(player.head.x, player.head.y, player.rightTail.x, player.rightTail.y);
+        playerLines.push(tmp);
+
+        playerLines.forEach(line => {
+            if (this.checkCollisionWithLineSegment(line)) {
+                player.dying();
+                return;
+            }
+        });
     }
 
     update() {
         if (!this.isDying) {
             this.updatePos();
+            this.checkCollisionPlayer();
         }
         else {
             if (this.dyingTickAnimation <= 0) {
@@ -130,7 +197,7 @@ class Asteroid {
     }
 
     drawDyingAnimation(ctx) {
-        
+
         ctx.beginPath();
 
         ctx.fillStyle = "white";
@@ -148,9 +215,9 @@ class Asteroid {
 
     draw(ctx) {
         if (!this.isDying) {
-            for (let i = 0; i < this.vertexesNum; i++){
+            for (let i = 0; i < this.vertexesNum; i++) {
                 let j = i - 1;
-                if (j < 0){
+                if (j < 0) {
                     j = this.vertexesNum - 1;
                 }
                 this.drawLine(ctx, this.vertexes[i].x, this.vertexes[i].y,
