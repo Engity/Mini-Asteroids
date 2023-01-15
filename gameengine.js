@@ -20,7 +20,7 @@ class GameEngine {
         this.up = false;
         this.down = false;
 
-        this.gameOver = false;
+        this.gameManager = null;
 
         // Options and the Details
         this.options = options || {
@@ -35,7 +35,8 @@ class GameEngine {
         this.startInput();
         this.timer = new Timer();
 
-
+        this.gameManager = new GameManager(this, ctx);
+        this.addEntity(this.gameManager);
     };
 
     start() {
@@ -135,27 +136,27 @@ class GameEngine {
         this.entities.push(entity);
     };
 
-    drawGameOver(ctx) {
-        ctx.font = "58px serif";
-        ctx.strokeText("Game Over", params.CANVAS_SIZE / 2 - 140, params.CANVAS_SIZE / 2);
-    }
-
     draw() {
-        if (this.gameOver) {
-            this.drawGameOver(this.ctx);
-        }
-        else {
-            // Clear the whole canvas with transparent color (rgba(0, 0, 0, 0))
-            this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
 
-            // Draw latest things first
-            for (let i = this.entities.length - 1; i >= 0; i--) {
-                this.entities[i].draw(this.ctx, this);
-            }
+
+        // Clear the whole canvas with transparent color (rgba(0, 0, 0, 0))
+        this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+
+        // Draw latest things first
+        for (let i = this.entities.length - 1; i >= 0; i--) {
+            this.entities[i].draw(this.ctx, this);
         }
+
     };
 
     update() {
+        if (this.gameManager.gameOver && this.down){
+            console.log("Start again");
+            this.gameManager.removeFromWorld = true;
+            this.gameManager = new GameManager(this, this.ctx);
+            this.addEntity(this.gameManager);
+        }
+
         let entitiesCount = this.entities.length;
 
         for (let i = 0; i < entitiesCount; i++) {

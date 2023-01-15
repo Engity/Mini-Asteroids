@@ -10,9 +10,5 @@ ASSET_MANAGER.downloadAll(() => {
 
 	gameEngine.init(ctx);
 
-    //Add main character
-    let mainChar = new Starship(gameEngine, params.CANVAS_SIZE / 2, params.CANVAS_SIZE / 2);
-    gameEngine.addEntity(mainChar);
-
 	gameEngine.start();
 });

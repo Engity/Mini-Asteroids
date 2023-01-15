@@ -2,7 +2,7 @@ class Starship {
     constructor(game, x, y) {
         Object.assign(this, { game, x, y });
         this.center = { x: x, y: y };
-        this.game.mainCharacter = this;
+    
         this.radius = 30;
         this.head = { x: x, y: y - this.radius };
         this.leftTail = { x: x - this.radius, y: y };
@@ -49,16 +49,6 @@ class Starship {
         if (this.y < 0) {
             this.y = params.CANVAS_SIZE - this.radius;
         }
-
-
-
-        // //Always keep object in frame
-        // this.x = Math.min(params.CANVAS_SIZE - this.radius, this.x);
-        // this.x = Math.max(0, this.x);
-
-        // this.y = Math.min(params.CANVAS_SIZE - this.radius, this.y);
-        // this.y = Math.max(0, this.y);
-
 
         this.center = { x: this.x, y: this.y }
         this.head.x = Math.cos(this.angle).toFixed(3) * this.radius + this.x;
@@ -151,21 +141,17 @@ class Starship {
             if (this.dyingTickAnimation <= 0) {
                 this.isDying = false;
                 this.removeFromWorld = true;
-                this.game.gameOver = true;
+                this.game.gameManager.gameOver = true;
             }
             else {
                 --this.dyingTickAnimation;
             }
         }
-        
-        console.log(this.dyingTickAnimation);
-        
-        //Temporary to trigger dead animation
-        if (this.game.down) {
-            this.isDying = true;
-            this.dyingTickAnimation = 400;
-        }
+    }
 
+    dying(){
+        this.isDying = true;
+        this.dyingTickAnimation = 400;
     }
 
     drawLine(ctx, xStart, yStart, xEnd, yEnd) {
@@ -213,11 +199,11 @@ class Starship {
         //console.log("Radius",  this.dyingTickAnimation + 200);
         ctx.beginPath();
         
-        ctx.fillStyle = "black";
+        ctx.fillStyle = "white";
         ctx.strokeStyle = "black";
         //ctx.arc(this.center.x, this.center.y, this.radius, 0, 2 * Math.PI);
         if (this.dyingTickAnimation > 200){
-            ctx.arc(this.center.x, this.center.y, this.radius - this.radius / this.dyingTickAnimation * 100, 0, 2 * Math.PI);
+            ctx.arc(this.center.x, this.center.y, this.dyingTickAnimation / 400 * this.radius, 0, 2 * Math.PI);
         }
         else
             ctx.arc(this.center.x, this.center.y, this.radius / this.dyingTickAnimation, 0, 2 * Math.PI);
