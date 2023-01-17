@@ -1,13 +1,23 @@
 class Line {
-    constructor(game) {
+    // constructor(game) {
+    //     this.game = game;
+    //     this.intRadius = 3;
+
+    //     this.points = [];
+    //     this.length = 0;
+    // };
+
+    constructor(game, x1 = 0, y1 = 0, x2 = 0, y2 = 0) {
         this.game = game;
         this.intRadius = 3;
 
         this.points = [];
         this.length = 0;
+        this.addEndPoints(x1, y1, x2, y2);
     };
 
     addEndPoints(x1, y1, x2, y2){
+        this.points = [];
         this.points.push({x: x1, y: y1},
             {x: x2, y: y2},
         );

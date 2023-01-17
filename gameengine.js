@@ -51,6 +51,7 @@ class GameEngine {
 
     startInput() {
         this.keyboardActive = false;
+        
         var that = this;
 
         var getXandY = function (e) {
@@ -72,7 +73,7 @@ class GameEngine {
         }
         function keydownListener(e) {
             that.keyboardActive = true;
-
+            e.preventDefault();
             switch (e.code) {
                 case "ArrowLeft":
                     that.left = true;
