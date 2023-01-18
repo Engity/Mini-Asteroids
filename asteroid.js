@@ -121,8 +121,10 @@ class Asteroid {
     }
 
     checkCollisionPlayer() {
+        if (this.dyingTickAnimation > 0){
+            return;
+        }
         let player = this.game.gameManager.mainCharacter;
-
         //Prechecking before going line by line
         if (player.isDying || Asteroid.distance({ x: this.x, y: this.y }, player.center) > this.radius + player.radius) {
             return;
