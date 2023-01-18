@@ -73,7 +73,7 @@ class Bullet {
 
         ctx.fill();
         ctx.stroke();
-
+        ctx.closePath();
     }
 
     draw(ctx) {

@@ -43,6 +43,20 @@ class Starship {
     }
 
     updatePos() {
+        let newDx = this.dx + this.forceX;
+        let newDy = this.dy + this.forceY;
+
+        if (newDx ** 2 + newDy ** 2 > this.maximumSpeed ** 2) {
+            [newDx, newDy] = this.vectorNormalize(newDx, newDy);
+            this.dx = newDx * this.maximumSpeed;
+            this.dy = newDy * this.maximumSpeed;
+        }
+        else {
+            this.dx = newDx;
+            this.dy = newDy;
+        }
+
+
         this.x += this.dx * this.game.clockTick;
         this.y += this.dy * this.game.clockTick;
 
@@ -164,23 +178,10 @@ class Starship {
                 this.currentAcceleration = Math.sqrt(this.forceX ** 2 + this.forceY ** 2);
             }
         }
-        else {
+        else if (!this.game.shoot){
             this.currentAcceleration = 0;
             this.forceX = 0;
             this.forceY = 0;
-        }
-
-        let newDx = this.dx + this.forceX;
-        let newDy = this.dy + this.forceY;
-
-        if (newDx ** 2 + newDy ** 2 > this.maximumSpeed ** 2) {
-            [newDx, newDy] = this.vectorNormalize(newDx, newDy);
-            this.dx = newDx * this.maximumSpeed;
-            this.dy = newDy * this.maximumSpeed;
-        }
-        else {
-            this.dx = newDx;
-            this.dy = newDy;
         }
     }
 
@@ -191,6 +192,23 @@ class Starship {
 
             this.game.gameManager.addEntity(bullet);
 
+            //Push the startship backward when shooting
+            let revAngle = this.angle - Math.PI;
+            this.currentAcceleration = Math.sqrt(this.forceX ** 2 + this.forceY ** 2);
+            this.currentAcceleration += this.maximumAcceleration;
+
+            this.currentAcceleration = Math.max(this.currentAcceleration, 0);
+            this.forceX = Math.cos(revAngle).toFixed(4) * this.maximumAcceleration;
+            this.forceY = Math.sin(revAngle).toFixed(4) * this.maximumAcceleration;
+
+            if (this.forceX ** 2 + this.forceY ** 2 > this.maximumAcceleration ** 2) {
+                [this.forceX, this.forceY] = this.vectorNormalize(this.forceX, this.forceY);
+                this.forceX *= this.maximumAcceleration;
+                this.forceY *= this.maximumAcceleration;
+
+                this.currentAcceleration = Math.sqrt(this.forceX ** 2 + this.forceY ** 2);
+            }
+            this.updatePos();
         }
 
         this.reload--;
@@ -199,8 +217,11 @@ class Starship {
 
     update() {
         if (!this.isDying) {
+            //Shooting
+            this.shoot();
             //Start to applying force
             this.updateMovement();
+            
             if (this.game.up) {
                 this.activateThruster = true;
             }
@@ -209,8 +230,7 @@ class Starship {
             }
             this.updatePos();
 
-            //Shooting
-            this.shoot();
+            
 
 
 
@@ -259,8 +279,14 @@ class Starship {
         //console.log("Radius",  this.dyingTickAnimation + 200);
         ctx.beginPath();
 
-        ctx.fillStyle = "white";
-        ctx.strokeStyle = "red";
+        if (Math.floor(this.dyingTickAnimation / 20 ) % 2 == 0){
+            ctx.fillStyle = "white";
+            ctx.strokeStyle = "red";
+        }
+        else{
+            ctx.fillStyle = "black";
+            ctx.strokeStyle = "green";
+        }
         //ctx.arc(this.center.x, this.center.y, this.radius, 0, 2 * Math.PI);
         if (this.dyingTickAnimation >= 75) {
             ctx.arc(this.center.x, this.center.y, this.dyingTickAnimation / 400 * this.radius, 0, 2 * Math.PI);
@@ -279,9 +305,9 @@ class Starship {
         if (!this.isDying) {
             ctx.fillStyle = "white";
             ctx.strokeStyle = "red";
-            if (this.shooting && this.reload > 0){
+            if (this.reload > 0 && this.game.shooting){
                 ctx.fillStyle = "red";
-                ctx.strokeStyle = "blue";
+                ctx.strokeStyle = "green";
             }
             this.drawLine(ctx, this.rightTail.x, this.rightTail.y, this.leftTail.x, this.leftTail.y);
             this.drawLine(ctx, this.head.x, this.head.y, this.leftTail.x, this.leftTail.y);
@@ -295,6 +321,6 @@ class Starship {
             this.drawDyingAnimation(ctx);
         }
 
-
+        ctx.closePath();
     }
 }

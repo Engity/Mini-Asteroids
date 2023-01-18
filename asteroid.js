@@ -189,8 +189,15 @@ class Asteroid {
 
         ctx.beginPath();
 
-        ctx.fillStyle = "white";
-        ctx.strokeStyle = "black";
+        
+        if (Math.floor(this.dyingTickAnimation / 20 ) % 2 == 0){
+            ctx.fillStyle = "white";
+            ctx.strokeStyle = "red";
+        }
+        else{
+            ctx.fillStyle = "black";
+            ctx.strokeStyle = "white";
+        }
         //ctx.arc(this.center.x, this.center.y, this.radius, 0, 2 * Math.PI);
         if (this.dyingTickAnimation > 50) {
             ctx.arc(this.center.x, this.center.y, this.dyingTickAnimation / 100 * this.radius, 0, 2 * Math.PI);
@@ -199,6 +206,7 @@ class Asteroid {
             ctx.arc(this.center.x, this.center.y, this.radius / this.dyingTickAnimation, 0, 2 * Math.PI);
         ctx.fill();
         ctx.stroke();
+        ctx.closePath();
     }
 
 
@@ -217,5 +225,6 @@ class Asteroid {
         else {
             this.drawDyingAnimation(ctx);
         }
+        
     }
 }

@@ -28,7 +28,7 @@ class Line {
     slope() {
         var slope;
 
-        if (this.points[1].x - this.points[0].x > 0.01)
+        if (this.points[1].x !== this.points[0].x )
             slope = (this.points[1].y - this.points[0].y) / (this.points[1].x - this.points[0].x);
         else
             slope = false;
