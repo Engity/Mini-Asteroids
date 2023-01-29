@@ -1,2 +1,5 @@
-# TCSS_491_Animation_Assignment
+#Mini Asteroids
+A minigame made from JavaScript.
+All physics, geometry and visual are generated using purely Math.
+
  
