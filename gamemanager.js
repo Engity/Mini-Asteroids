@@ -123,13 +123,20 @@ class GameManager {
     };
 
     drawGameOver(ctx) {
+        ctx.beginPath();
+        ctx.textAlign = "center";
         ctx.fillStyle = "black";
         ctx.strokeStyle = "black";
         ctx.font = "58px serif";
-        ctx.strokeText("Game Over, Press S to play again!", params.CANVAS_SIZE / 2 - 450, params.CANVAS_SIZE / 2);
+        ctx.strokeText("Game Over, Press S to play again!", params.CANVAS_SIZE / 2 - 150, params.CANVAS_SIZE / 2);
+        ctx.fill();
+        ctx.stroke();
+        ctx.textAlign = "left";
+        ctx.closePath();
     }
 
     draw(ctx){
+        ctx.beginPath();
          //Displaying the score
          ctx.fillStyle = "black";
          ctx.strokeStyle = "black";
@@ -144,7 +151,7 @@ class GameManager {
         for (let i = this.entities.length - 1; i >= 0; i--) {
             this.entities[i].draw(this.ctx, this);
         }
-
+        ctx.closePath();
        
     };
 };

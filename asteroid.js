@@ -3,8 +3,8 @@
  * vertexesNum is the number of vertexes of the asteroids. Should be <= 7 and >= 3
  */
 class Asteroid {
-    constructor(game, x, y, vertexesNum = 5) {
-        Object.assign(this, { game, x, y, vertexesNum });
+    constructor(game, x, y, vertexesNum = 5, radius = 30, spawnable = true) {
+        Object.assign(this, { game, x, y, vertexesNum, radius, spawnable});
 
         //Randomize movement
         this.dx = randomInt(100) - 35;
@@ -13,7 +13,6 @@ class Asteroid {
         this.angle = 3 * Math.PI / 2;
         this.spinning = 2 * Math.PI / 3600 * randomInt(5); //Spinning slightly
 
-        this.radius = 30;
         this.center = { x: x, y: y };
 
         this.dyingTickAnimation = 0;
@@ -172,6 +171,14 @@ class Asteroid {
     dying() {
         this.isDying = true;
         this.dyingTickAnimation = 100;
+
+        //%30 chance to spawn additional asteroid when died
+        if (this.spawnable && randomInt(100) < 30){
+            //game, x, y, vertexesNum = 5, radius = 30, spawnable = true
+            let asteroid = new Asteroid(this.game, this.x, this.y, randomInt(10) + 5, this.radius / 2, false);
+            this.game.gameManager.addEntity(asteroid);
+            this.game.gameManager.totalAsteroids++;
+        }
     }
 
     drawLine(ctx, xStart, yStart, xEnd, yEnd) {
